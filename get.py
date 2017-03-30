@@ -25,16 +25,16 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         response = http_request(args.site_address, protocol=args.protocol, path=args.path, headers=headers)
-        headers = response['headers']
+        respons_headers = response['headers']
 
         encoding = None
-        if 'Content-Encoding' in headers:
-            encoding = headers['Content-Encoding']
+        if 'Content-Encoding' in respons_headers:
+            encoding = respons_headers['Content-Encoding']
 
         print('REQUEST :')
         print("\tstatus : " + str(response['status']))
         print("\tMessage : " + str(response['message']))
-        [print("\t" + header + ":" + headers[header]) for header in headers]
+        [print("\t" + header + ":" + respons_headers[header]) for header in respons_headers]
 
         if args.print_body:
             if encoding is None:
