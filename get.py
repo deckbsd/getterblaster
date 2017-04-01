@@ -2,6 +2,7 @@
 
 import zlib
 import argparse
+from header import *
 from http_request import *
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0",
@@ -12,6 +13,7 @@ headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20
 
 def print_row(output, data):
     print(" %30s %-50s " % (output, data))
+
 
 if __name__ == "__main__":
     try:
@@ -26,8 +28,16 @@ if __name__ == "__main__":
         parser.add_argument('--body', '-b', dest='print_body', action='store_const',
                             const=True, default=False,
                             help='print the body (by default : no')
+        parser.add_argument('--headers', dest='headers_file', default=None,
+                            help='initialise request headers with file')
+        parser.add_argument('--delimiter', '-d', dest='headers_delimiter', default=':',
+                            help='set the delimiter to use when reading headers file (specified by --header or -h) '
+                                 "default ':'")
 
         args = parser.parse_args()
+        if args.headers_file is not None:
+            headers = file_to_headers(args.headers_file, args.headers_delimiter)
+
         response = http_request(args.site_address, protocol=args.protocol, path=args.path, headers=headers)
         response_headers = response['headers']
 
@@ -44,7 +54,7 @@ if __name__ == "__main__":
             if encoding is None:
                 print(response['body'].decode('utf-8'))
             else:
-                decompressed_content = zlib.decompress(response['body'], 16+zlib.MAX_WBITS)
+                decompressed_content = zlib.decompress(response['body'], 16 + zlib.MAX_WBITS)
                 print(decompressed_content)
 
     except ValueError as e:
