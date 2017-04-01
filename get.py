@@ -54,7 +54,6 @@ if __name__ == "__main__":
 
         response = http_request(args.site_address, protocol=args.protocol, path=args.path, headers=headers)
         response_headers = response['headers']
-
         encoding = None
         if 'Content-Encoding' in response_headers:
             encoding = response_headers['Content-Encoding']
@@ -63,7 +62,6 @@ if __name__ == "__main__":
         print_row("Status :", str(response['status']))
         print_row("Message :", str(response['message']))
         [print_row(header + " :", response_headers[header]) for header in response_headers]
-
         body = None
         if args.print_body:
             if encoding is None:
