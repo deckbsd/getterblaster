@@ -15,6 +15,18 @@ def print_row(output, data):
     print(" %30s %-50s " % (output, data))
 
 
+def response_to_file(file, response_data, body_data):
+    response_file = open(file, 'a')
+    response_file.writelines("Status : " + str(response_data['status']) + "\n")
+    response_file.writelines("Message : " + str(response_data['message']) + "\n")
+    [response_file.writelines(header + " : " + response_headers[header] + "\n") for header in response_headers]
+
+    if body_data is not None:
+        response_file.write(body_data)
+
+    response_file.close()
+
+
 if __name__ == "__main__":
     try:
 
@@ -33,6 +45,8 @@ if __name__ == "__main__":
         parser.add_argument('--delimiter', '-d', dest='headers_delimiter', default=':',
                             help='set the delimiter to use when reading headers file (specified by --header or -h) '
                                  "default ':'")
+        parser.add_argument('--output', '-o', dest='output_file', default=None,
+                            help='save the response into file')
 
         args = parser.parse_args()
         if args.headers_file is not None:
@@ -50,12 +64,17 @@ if __name__ == "__main__":
         print_row("Message :", str(response['message']))
         [print_row(header + " :", response_headers[header]) for header in response_headers]
 
+        body = None
         if args.print_body:
             if encoding is None:
-                print(response['body'].decode('utf-8'))
+                body = response['body'].decode('utf-8')
+                print(body)
             else:
-                decompressed_content = zlib.decompress(response['body'], 16 + zlib.MAX_WBITS)
-                print(decompressed_content)
+                body = str(zlib.decompress(response['body'], 16 + zlib.MAX_WBITS))
+                print(body)
+
+        if args.output_file is not None:
+            response_to_file(args.output_file, response, body)
 
     except ValueError as e:
         print(e)
