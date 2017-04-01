@@ -9,6 +9,10 @@ headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20
            'Accept-Language': "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3", 'Accept-Encoding': "gzip, deflate", 'DNT': "1",
            'Upgrade-Insecure-Requests': "1"}
 
+
+def print_row(output, data):
+    print(" %30s %-50s " % (output, data))
+
 if __name__ == "__main__":
     try:
 
@@ -25,16 +29,16 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         response = http_request(args.site_address, protocol=args.protocol, path=args.path, headers=headers)
-        respons_headers = response['headers']
+        response_headers = response['headers']
 
         encoding = None
-        if 'Content-Encoding' in respons_headers:
-            encoding = respons_headers['Content-Encoding']
+        if 'Content-Encoding' in response_headers:
+            encoding = response_headers['Content-Encoding']
 
-        print('REQUEST :')
-        print("\tstatus : " + str(response['status']))
-        print("\tMessage : " + str(response['message']))
-        [print("\t" + header + ":" + respons_headers[header]) for header in respons_headers]
+        print('RESPONSE :')
+        print_row("Status :", str(response['status']))
+        print_row("Message :", str(response['message']))
+        [print_row(header + " :", response_headers[header]) for header in response_headers]
 
         if args.print_body:
             if encoding is None:
