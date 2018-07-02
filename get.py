@@ -72,10 +72,10 @@ if __name__ == "__main__":
         if args.print_body:
             if encoding is None:
                 body = response['body'].decode('utf-8')
-                print(body)
             else:
                 body = str(zlib.decompress(response['body'], 16 + zlib.MAX_WBITS))
-                print(body)
+            
+            print(body)
 
         if args.output_file is not None:
             response_to_file(args.output_file, response, body)
