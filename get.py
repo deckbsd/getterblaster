@@ -47,12 +47,18 @@ if __name__ == "__main__":
                                  "default ':'")
         parser.add_argument('--output', '-o', dest='output_file', default=None,
                             help='save the response into file')
+        parser.add_argument('--method', '-m', dest='method', default='get',
+                            help='http method (get or post)')
+        parser.add_argument('--data', '-a', dest='data', default=None,
+                            help='body of the request')
+                        
+
 
         args = parser.parse_args()
         if args.headers_file is not None:
             headers = file_to_headers(args.headers_file, args.headers_delimiter)
 
-        response = http_request(args.site_address, protocol=args.protocol, path=args.path, headers=headers)
+        response = http_request(args.site_address, method=args.method, body=args.data, protocol=args.protocol, path=args.path, headers=headers)
         response_headers = response['headers']
         encoding = None
         if 'Content-Encoding' in response_headers:
