@@ -58,7 +58,7 @@ if __name__ == "__main__":
         if args.headers_file is not None:
             headers = file_to_headers(args.headers_file, args.headers_delimiter)
 
-        response = http_request(args.site_address, method=args.method, body=args.data, protocol=args.protocol, path=args.path, headers=headers)
+        response = http_request(args.site_address, method=args.method, data=args.data, protocol=args.protocol, path=args.path, headers=headers)
         response_headers = response['headers']
         encoding = None
         if 'Content-Encoding' in response_headers:
