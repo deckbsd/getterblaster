@@ -51,6 +51,12 @@ if __name__ == "__main__":
                             help='http method (get or post)')
         parser.add_argument('--data', '-a', dest='data', default=None,
                             help='body of the request')
+        parser.add_argument('--proxy', '-x', dest='proxy', default=None,
+                            help='the proxy address')
+        parser.add_argument('--port', '-t', dest='proxy_port', default=None,
+                            help='the proxy address')
+        parser.add_argument('--fdata', '-f', dest='data_file', default=None,
+                            help='the file of the data request')
                         
 
 
@@ -58,7 +64,17 @@ if __name__ == "__main__":
         if args.headers_file is not None:
             headers = file_to_headers(args.headers_file, args.headers_delimiter)
 
-        response = http_request(args.site_address, method=args.method, data=args.data, protocol=args.protocol, path=args.path, headers=headers)
+        if args.proxy_port is not None:
+            port = int(args.proxy_port)
+        else:
+            port = None
+        
+        if args.data_file is not None:
+            with open(args.data_file, 'r') as raw_data:
+                data = raw_data.read()
+        else:
+            data = args.data
+        response = http_request(args.site_address, method=args.method, data=data, protocol=args.protocol, path=args.path, headers=headers, proxy=args.proxy, port=port)
         response_headers = response['headers']
         encoding = None
         if 'Content-Encoding' in response_headers:

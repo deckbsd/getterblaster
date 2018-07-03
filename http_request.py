@@ -3,11 +3,20 @@
 import http.client
 
 
-def http_request(host, protocol='http', path='/', method='GET', data=None, headers={}):
-    if protocol == 'https':
-        connection = http.client.HTTPSConnection(host)
+def http_request(host, protocol='http', path='/', method='GET', data=None, headers={}, proxy=None, port=-1):
+
+    if proxy is not None:
+        if protocol == 'https':
+            connection = http.client.HTTPSConnection(proxy, port)
+        else:
+            connection = http.client.HTTPConnection(proxy, port)
+
+        connection.set_tunnel(host)
     else:
-        connection = http.client.HTTPConnection(host)
+        if protocol == 'https':
+            connection = http.client.HTTPSConnection(host)
+        else:
+            connection = http.client.HTTPConnection(host)
 
     connection.request(method, path, data, headers=headers)
     response = connection.getresponse()
