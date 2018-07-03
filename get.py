@@ -57,7 +57,8 @@ if __name__ == "__main__":
                             help='the proxy address')
         parser.add_argument('--fdata', '-f', dest='data_file', default=None,
                             help='the file of the data request')
-                        
+        parser.add_argument('--repeat', '-r', dest='repeat', default=1,
+                            help='execute the request X times')
 
 
         args = parser.parse_args()
@@ -74,27 +75,31 @@ if __name__ == "__main__":
                 data = raw_data.read()
         else:
             data = args.data
-        response = http_request(args.site_address, method=args.method, data=data, protocol=args.protocol, path=args.path, headers=headers, proxy=args.proxy, port=port)
-        response_headers = response['headers']
-        encoding = None
-        if 'Content-Encoding' in response_headers:
-            encoding = response_headers['Content-Encoding']
 
-        print('RESPONSE :')
-        print_row("Status :", str(response['status']))
-        print_row("Message :", str(response['message']))
-        [print_row(header + " :", response_headers[header]) for header in response_headers]
-        body = None
-        if args.print_body:
-            if encoding is None:
-                body = response['body'].decode('utf-8')
-            else:
-                body = str(zlib.decompress(response['body'], 16 + zlib.MAX_WBITS))
-            
-            print(body)
+        r = 0
+        while r < int(args.repeat):
+            r += 1
+            response = http_request(args.site_address, method=args.method, data=data, protocol=args.protocol, path=args.path, headers=headers, proxy=args.proxy, port=port)
+            response_headers = response['headers']
+            encoding = None
+            if 'Content-Encoding' in response_headers:
+                encoding = response_headers['Content-Encoding']
 
-        if args.output_file is not None:
-            response_to_file(args.output_file, response, body)
+            print('RESPONSE :')
+            print_row("Status :", str(response['status']))
+            print_row("Message :", str(response['message']))
+            [print_row(header + " :", response_headers[header]) for header in response_headers]
+            body = None
+            if args.print_body:
+                if encoding is None:
+                    body = response['body'].decode('utf-8')
+                else:
+                    body = str(zlib.decompress(response['body'], 16 + zlib.MAX_WBITS))
+                
+                print(body)
+
+            if args.output_file is not None:
+                response_to_file(args.output_file, response, body)
 
     except ValueError as e:
         print(e)
